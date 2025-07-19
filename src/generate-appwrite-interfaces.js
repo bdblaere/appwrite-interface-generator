@@ -2,10 +2,6 @@
 
 import fs from 'fs/promises';
 import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 function printHelp() {
   console.log(`
@@ -29,7 +25,7 @@ function parseArgs() {
     if (arg === '--help' || arg === '-h') {
       options.help = true;
     } else if (arg.startsWith('--')) {
-      const [key, value] = arg.slice(2).split('=');
+      const [key, value] = arg.slice(2).split('=', 2);
       options[key] = value;
     }
   }
@@ -68,9 +64,19 @@ const typeMap = {
   datetime: 'string',
 };
 
+const defaultAttributes = {
+  "$collectionId": "string",
+  "$createdAt": "string",
+  "$databaseId": "string",
+  "$id": "string",
+  "$permissions": "Permission[]",
+  "$sequence": "number",
+  "$updatedAt": "string",
+}
+
 function getArraySuffix(attr) {
   if (attr.relationType?.endsWith('ToMany')) {
-    return '[]';
+    return '[]'; // a *ToMany relationship is represented as an array
   }
   return attr.array ? '[]' : '';
 }
@@ -83,6 +89,9 @@ function toPascalCase(str) {
 
 function getTypeFromAttribute(attr) {
   if (attr.type === 'relationship') {
+    if (!attr.relatedCollection) {
+      return 'any';
+    }
     return toPascalCase(attr.relatedCollection);
   }
 
@@ -95,19 +104,24 @@ function generateInterfaceCode(collection) {
 
   const interfaceName = toPascalCase(collection.name);
 
-  const lines = [];
+  // start with the default attributes
+  const attributes = Object.entries(defaultAttributes).map(([key, type]) => {
+    return `  ${key}: ${type};`;
+  });
 
+  // then, add the attributes from the collection
   for (const attr of collection.attributes) {
     const optional = attr.required ? '' : '?';
     const tsType = getTypeFromAttribute(attr);
     const arraySuffix = getArraySuffix(attr);
-    lines.push(`  ${attr.key}${optional}: ${tsType}${arraySuffix};`);
+    attributes.push(`  ${attr.key}${optional}: ${tsType}${arraySuffix};`);
 
     if (attr.type === 'relationship') {
       relatedCollections.add(tsType);
     }
   }
 
+  // import the related collections
   const imports = [...relatedCollections]
     .filter(rel => rel != interfaceName)
     .map(rel => `import { ${rel} } from './${rel}';`);
@@ -115,11 +129,12 @@ function generateInterfaceCode(collection) {
   return [
     '// This file is auto-generated from Appwrite schema by the appwrite-interface-generator package',
     '// Any changes you make here will be overwritten',
-    '// To regenerate, run: generate-appwrite-interfaces --input=path/to/appwrite.json --output=src/appwrite-interfaces',
+    `// To regenerate, run: generate-appwrite-interfaces --input=${options.input} --output=${options.output}`,
+    `import { Permission } from 'appwrite';`,
     ...imports,
     '',
     `export interface ${interfaceName} {`,
-    ...lines,
+    ...attributes,
     '}',
     ''
   ].join('\n');

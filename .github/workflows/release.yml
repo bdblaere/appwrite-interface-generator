@@ -24,6 +24,19 @@ jobs:
         run: npm ci
 
       - name: Publish to npm
-        run: npm publish --access public
+        run: |
+          if [ "${{ github.event.release.prerelease }}" = "true" ]; then
+            TAG_NAME="${{ github.event.release.tag_name }}"
+            if echo "$TAG_NAME" | grep -qi "beta"; then
+              echo "Publishing with tag: beta"
+              npm publish --tag beta --access public
+            else
+              echo "Publishing with tag: alpha"
+              npm publish --tag alpha --access public
+            fi
+          else
+            echo "Publishing as latest (stable release)"
+            npm publish --access public
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
