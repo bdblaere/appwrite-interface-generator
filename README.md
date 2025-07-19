@@ -1,5 +1,7 @@
 # Appwrite Interface Generator
 
+[View on Github](https://github.com/bdblaere/appwrite-interface-generator)
+
 This package allows you to generate TypeScript interfaces from Appwrite collections defined in appwrite.json
 
 ## Installation

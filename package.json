@@ -15,5 +15,10 @@
     "TypeScript"
   ],
   "author": "bdblaere",
-  "license": "ISC"
+  "license": "ISC",
+  "files": [
+    "src",
+    "package.json",
+    "README.md"
+  ]
 }
