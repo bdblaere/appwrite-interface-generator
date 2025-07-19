@@ -55,8 +55,7 @@ console.log('Using output dir:', OUTPUT_DIR);
 const header = `// This file is auto-generated from Appwrite schema by the appwrite-interface-generator package
 // Any changes you make here will be overwritten
 // To regenerate, run: generate-appwrite-interfaces --input=${options.input} --output=${options.output}
-import { Models } from 'appwrite';
-`;
+import { Models } from 'appwrite';`;
 
 const appwriteDocument = `
 // Remove the index signature from Models.Document
@@ -69,7 +68,6 @@ type AppwriteDocument = {
     ? never
     : K]: Models.Document[K];
 };
-
 `;
 
 const typeMap = {
