@@ -32,9 +32,6 @@ jobs:
           echo "Updated version:"
           node -p "require('./package.json').version"
 
-      - name: Build package
-        run: npm run build
-
       - name: Publish to npm
         run: |
           if [ "${{ github.event.release.prerelease }}" = "true" ]; then
