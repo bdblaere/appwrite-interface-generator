@@ -65,13 +65,7 @@ const typeMap = {
 };
 
 const defaultAttributes = {
-  "$collectionId": "string",
-  "$createdAt": "string",
-  "$databaseId": "string",
-  "$id": "string",
-  "$permissions": "Permission[]",
   "$sequence": "number",
-  "$updatedAt": "string",
 }
 
 function getArraySuffix(attr) {
@@ -130,10 +124,10 @@ function generateInterfaceCode(collection) {
     '// This file is auto-generated from Appwrite schema by the appwrite-interface-generator package',
     '// Any changes you make here will be overwritten',
     `// To regenerate, run: generate-appwrite-interfaces --input=${options.input} --output=${options.output}`,
-    `import { Permission } from 'appwrite';`,
+    `import { Models } from 'appwrite';`,
     ...imports,
     '',
-    `export interface ${interfaceName} {`,
+    `export interface ${interfaceName} extends Models.Document {`,
     ...attributes,
     '}',
     ''

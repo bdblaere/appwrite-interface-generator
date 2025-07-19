@@ -11,7 +11,7 @@
     "start": "node ./src/generate-appwrite-interfaces.js"
   },
   "keywords": [
-    "appwrite",
+    "Appwrite",
     "TypeScript"
   ],
   "author": "bdblaere",
