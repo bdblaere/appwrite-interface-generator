@@ -52,11 +52,14 @@ const OUTPUT_DIR = path.resolve(process.cwd(), options.output);
 console.log('Using input file:', INPUT_FILE);
 console.log('Using output dir:', OUTPUT_DIR);
 
-const defaultText = `
+const header = `
 // This file is auto-generated from Appwrite schema by the appwrite-interface-generator package
 // Any changes you make here will be overwritten
 // To regenerate, run: generate-appwrite-interfaces --input=${options.input} --output=${options.output}
 import { Models } from 'appwrite';
+`;
+
+const appwriteDocument = `
 
 // Remove the index signature from Models.Document
 type AppwriteDocument = { 
@@ -140,9 +143,9 @@ function generateInterfaceCode(collection) {
     .map(rel => `import { ${rel} } from './${rel}';`);
 
   return [
-    defaultText,
+    header,
     ...imports,
-    '',
+    appwriteDocument,
     `export interface ${interfaceName} extends AppwriteDocument {`,
     ...attributes,
     '}',
