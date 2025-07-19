@@ -1,6 +1,6 @@
 {
   "name": "appwrite-interface-generator",
-  "version": ".1.0",
+  "version": "0.1.0",
   "description": "This package allows you to generate TypeScript interfaces from Appwrite collections defined in appwrite.json",
   "main": "generate-appwrite-interfaces.js",
   "type": "module",
