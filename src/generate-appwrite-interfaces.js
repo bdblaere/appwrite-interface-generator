@@ -52,6 +52,25 @@ const OUTPUT_DIR = path.resolve(process.cwd(), options.output);
 console.log('Using input file:', INPUT_FILE);
 console.log('Using output dir:', OUTPUT_DIR);
 
+const defaultText = `
+// This file is auto-generated from Appwrite schema by the appwrite-interface-generator package
+// Any changes you make here will be overwritten
+// To regenerate, run: generate-appwrite-interfaces --input=${options.input} --output=${options.output}
+import { Models } from 'appwrite';
+
+// Remove the index signature from Models.Document
+type AppwriteDocument = { 
+  [K in keyof Models.Document as string extends K
+    ? never
+    : number extends K
+    ? never
+    : symbol extends K
+    ? never
+    : K]: Models.Document[K];
+};
+
+`;
+
 const typeMap = {
   string: 'string',
   integer: 'number',
@@ -121,13 +140,10 @@ function generateInterfaceCode(collection) {
     .map(rel => `import { ${rel} } from './${rel}';`);
 
   return [
-    '// This file is auto-generated from Appwrite schema by the appwrite-interface-generator package',
-    '// Any changes you make here will be overwritten',
-    `// To regenerate, run: generate-appwrite-interfaces --input=${options.input} --output=${options.output}`,
-    `import { Models } from 'appwrite';`,
+    defaultText,
     ...imports,
     '',
-    `export interface ${interfaceName} extends Models.Document {`,
+    `export interface ${interfaceName} extends AppwriteDocument {`,
     ...attributes,
     '}',
     ''
